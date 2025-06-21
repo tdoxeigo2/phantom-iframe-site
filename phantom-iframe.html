@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Phantom Wallet Iframe</title>
+</head>
+<body>
+  <div id="wallet-ui" style="height: 100vh;"></div>
+
+  <script>
+  import('https://unpkg.com/@phantom/wallet-sdk@latest/dist/index.mjs')
+    .then(({ createPhantom }) => {
+      return createPhantom({
+        mode: 'element',
+        element: document.getElementById('wallet-ui')
+      });
+    })
+    .then(async phantom => {
+      const { publicKey } = await phantom.connect();
+      console.log("✅ Connected inside iframe:", publicKey.toString());
+      window.parent.postMessage({
+        type: 'phantom-connected',
+        publicKey: publicKey.toString()
+      }, '*');
+    })
+    .catch(console.error);
+</script>
+
+</body>
+</html>
